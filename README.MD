@@ -1,0 +1,5 @@
+SMKHebatSMKBisa 🙌
+
+ Aplikasi yang dibuat untuk meringankan tugas sekertaris kelas dan pengajar, dimana pengajar tidak perlu mengisi buku hadir mengajar kelas, dengan aplikasi ini pengajar hanya perlu mengisi formulir dan upload bukti mengajar, dengan aplikasi ini diharapkan tidak ada konflik data buku hadir mengajar kelas, jika kita melihat sekolah yang saat ini menggunakan buku hadir mengajar kelas pasti ada satu orang pengajar yang akan menulis secara spontan (tidak memperhatikan colom tempat dia menulis) dan ini membuat pengajar yang selanjutnya mengajar menjadi bingung dalam mengisi bukunya dan itu juga membuat sekertaris kelas di salahkan karena kekacauan penulisan yang diperbuat oleh pengajar A, dan ini juga membuat pembukuan bulanannya menjadi kacau dan akan sedikit sulit, karena itu saya memiliki ide membuat aplikasi ini, walaupun kasusnya terlihat sepele namun ini juga akan membuat rugi pihak - pihak lain. Mungkin itu saja dari aku, terima kasihhh ✨🙌
+
+ Maaf mengumpulkannya telat dikarenakan saya membuat ulang project nya sebab terdapat error yang memang sudah saya coba fix namun efek nya membuat fitur lain menjadi error juga 🙏🙏
