@@ -14,10 +14,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('jwt_token');
-    const isAuthPage = ['/login', '/register'].includes(pathname);
+    const isAuthPage = pathname.startsWith('/auth');
     
     if (!token && !isAuthPage) {
-      router.push('/login');
+      router.push('/auth/login');
     } else if (token && isAuthPage) {
       router.push('/dashboard');
     } else {

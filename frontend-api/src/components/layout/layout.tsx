@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import Login from '../components/auth/Login';
-import Register from '../components/auth/Register';
+import Login from '../../app/auth/login/page';
+import Register from '../../app/auth/register/page';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,13 +17,33 @@ function MainLayout({ children }: LayoutProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [currentNavigationStyle, setCurrentNavigationStyle] = useState('default');
+  const [headerStyle, setHeaderStyle] = useState('default');
+  const [currentDirection, setCurrentDirection] = useState<'ltr' | 'rtl'>('ltr');
+  const [currentLayout, setCurrentLayout] = useState<'vertical' | 'horizontal'>('vertical');
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
+  const [menuStyle, setMenuStyle] = useState('default');
+  const [sidemenuLayout, setSidemenuLayout] = useState('default');
+  const [pageStyle, setPageStyle] = useState('default');
+  const [layoutWidth, setLayoutWidth] = useState('default');
+  const [menuPosition, setMenuPosition] = useState('default');
+  const [headerPosition, setHeaderPosition] = useState('default');
+  const [loaderEnabled, setLoaderEnabled] = useState(false);
+  const [themeBackground, setThemeBackground] = useState('default');
+  const [menuBackground, setMenuBackground] = useState('default');
+
+  // Toggle sidebar function
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('jwt_token');
     setIsAuthenticated(!!token);
     setIsLoading(false);
 
-    // Redirect to login if not authenticated and not on auth pages
     if (!token && !['/login', '/register'].includes(pathname)) {
       router.push('/login');
     }
@@ -37,7 +57,6 @@ function MainLayout({ children }: LayoutProps) {
     );
   }
 
-  // Show auth pages if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -60,12 +79,43 @@ function MainLayout({ children }: LayoutProps) {
     );
   }
 
-  // Show main layout if authenticated
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        <Header 
+          setSidebarOpen={setSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          isSidebarCollapsed={isSidebarCollapsed}
+          onNavigationStyleChange={setCurrentNavigationStyle}
+          currentNavigationStyle={currentNavigationStyle}
+          headerStyle={headerStyle}
+          onHeaderStyleChange={setHeaderStyle}
+          onDirectionChange={setCurrentDirection}
+          onLayoutChange={setCurrentLayout}
+          currentDirection={currentDirection}
+          currentLayout={currentLayout}
+          onThemeChange={setCurrentTheme}
+          currentTheme={currentTheme}
+          onMenuStyleChange={setMenuStyle}
+          menuStyle={menuStyle}
+          onSidemenuLayoutChange={setSidemenuLayout}
+          sidemenuLayout={sidemenuLayout}
+          onPageStyleChange={setPageStyle}
+          pageStyle={pageStyle}
+          onLayoutWidthChange={setLayoutWidth}
+          layoutWidth={layoutWidth}
+          onMenuPositionChange={setMenuPosition}
+          menuPosition={menuPosition}
+          onHeaderPositionChange={setHeaderPosition}
+          headerPosition={headerPosition}
+          onLoaderChange={setLoaderEnabled}
+          loaderEnabled={loaderEnabled}
+          onThemeBackgroundChange={setThemeBackground}
+          themeBackground={themeBackground}
+          onMenuBackgroundChange={setMenuBackground}
+          menuBackground={menuBackground}
+        />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           {children}
         </main>

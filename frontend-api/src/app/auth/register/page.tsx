@@ -1,24 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Lock, UserCog, Sparkles } from 'lucide-react';
 import { apiService, RegisterData } from '../../../service/api';
 
 interface RegisterProps {
   onToggleForm: () => void;
 }
 
-
 interface User {
   id: string;
   name: string;
   email: string;
   role: string;
-  
 }
 
-// Interface untuk response API
 interface AuthResponse {
   token: string;
   user: User;
@@ -34,7 +31,13 @@ const Register: React.FC<RegisterProps> = ({ onToggleForm }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -66,117 +69,191 @@ const Register: React.FC<RegisterProps> = ({ onToggleForm }) => {
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          {error}
-        </div>
-      )}
-      
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Nama Lengkap
-        </label>
-        <div className="mt-1">
-          <input
-            id="name"
-            name="name"
-            type="text"
-            required
-            value={formData.name}
-            onChange={handleChange}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
-            placeholder="Masukkan nama lengkap Anda"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Email
-        </label>
-        <div className="mt-1">
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={handleChange}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
-            placeholder="Masukkan email Anda"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Password
-        </label>
-        <div className="mt-1 relative">
-          <input
-            id="password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            required
-            value={formData.password}
-            onChange={handleChange}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
-            placeholder="Masukkan password Anda"
-          />
-          <button
-            type="button"
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <EyeOff className="h-5 w-5 text-gray-400" />
-            ) : (
-              <Eye className="h-5 w-5 text-gray-400" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className={`w-full max-w-md transform transition-all duration-700 ${isMounted ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+          {/* Header dengan gradient */}
+          <div className="bg-gradient-to-r from-green-600 to-blue-600 p-6 text-center relative">
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+              {[...Array(5)].map((_, i) => (
+                <Sparkles 
+                  key={i}
+                  className="absolute text-white opacity-30 animate-pulse"
+                  style={{
+                    top: `${Math.random() * 100}%`,
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${i * 0.5}s`,
+                    fontSize: `${Math.random() * 20 + 10}px`
+                  }}
+                />
+              ))}
+            </div>
+            <h1 className="text-3xl font-bold text-white relative z-10">Buat Akun Baru</h1>
+            <p className="text-blue-100 mt-2 relative z-10">Daftar untuk memulai menggunakan aplikasi</p>
+          </div>
+          
+          {/* Form container */}
+          <div className="px-8 py-6">
+            {error && (
+              <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg flex items-center transition-all duration-300 animate-shake">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {error}
+              </div>
             )}
-          </button>
+            
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Nama Lengkap
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="transition-all duration-300 pl-10 appearance-none block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="Masukkan nama lengkap Anda"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="transition-all duration-300 pl-10 appearance-none block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="Masukkan email Anda"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="transition-all duration-300 pl-10 pr-10 appearance-none block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="Masukkan password Anda"
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center transition-all duration-300 hover:text-blue-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-blue-500" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-blue-500" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Peran
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <UserCog className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="transition-all duration-300 pl-10 appearance-none block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="teacher">Guru</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="group relative w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-300 transform hover:-translate-y-0.5"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Memproses...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                      </svg>
+                      Daftar
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="text-center pt-4">
+                <button
+                  type="button"
+                  onClick={onToggleForm}
+                  className="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-300 font-medium inline-flex items-center"
+                >
+                  Sudah punya akun?
+                  <span className="ml-1 underline decoration-2 underline-offset-2">Masuk di sini</span>
+                  <svg className="w-4 h-4 ml-1 transition-transform duration-300 hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-
-      <div>
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Peran
-        </label>
-        <div className="mt-1">
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
-          >
-            <option value="teacher">Guru</option>
-            <option value="supervisor">Supervisor</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-        >
-          {isLoading ? 'Memproses...' : 'Daftar'}
-        </button>
-      </div>
-
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={onToggleForm}
-          className="text-sm text-blue-600 hover:text-blue-500"
-        >
-          Sudah punya akun? Masuk di sini
-        </button>
-      </div>
-    </form>
+      
+      <style jsx global>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake {
+          animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+      `}</style>
+    </div>
   );
 };
 
