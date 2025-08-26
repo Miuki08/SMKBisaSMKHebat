@@ -2,20 +2,46 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import { apiService, RegisterData } from '../../../service/api';
 
-interface LoginProps {
+interface RegisterProps {
   onToggleForm: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  
+}
+
+// Interface untuk response API
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+const Register: React.FC<RegisterProps> = ({ onToggleForm }) => {
+  const [formData, setFormData] = useState<RegisterData>({
+    name: '',
+    email: '',
+    password: '',
+    role: 'teacher'
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,25 +49,17 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('jwt_token', data.token);
-        localStorage.setItem('user_data', JSON.stringify(data.user));
-        router.push('/dashboard');
-      } else {
-        setError(data.error || 'Login gagal');
-      }
+      const response = await apiService.post<AuthResponse>('/auth/register', formData);
+      
+      localStorage.setItem('jwt_token', response.token);
+      localStorage.setItem('user_data', JSON.stringify(response.user));
+      router.push('/dashboard');
     } catch (error) {
-      setError('Terjadi kesalahan. Silakan coba lagi.');
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Registrasi gagal. Silakan coba lagi.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +74,24 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
       )}
       
       <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Nama Lengkap
+        </label>
+        <div className="mt-1">
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            value={formData.name}
+            onChange={handleChange}
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+            placeholder="Masukkan nama lengkap Anda"
+          />
+        </div>
+      </div>
+
+      <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Email
         </label>
@@ -64,10 +100,9 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
             id="email"
             name="email"
             type="email"
-            autoComplete="email"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
             className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
             placeholder="Masukkan email Anda"
           />
@@ -83,10 +118,9 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
             id="password"
             name="password"
             type={showPassword ? 'text' : 'password'}
-            autoComplete="current-password"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
             className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
             placeholder="Masukkan password Anda"
           />
@@ -104,23 +138,22 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-            Ingat saya
-          </label>
-        </div>
-
-        <div className="text-sm">
-          <Link href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
-            Lupa password?
-          </Link>
+      <div>
+        <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Peran
+        </label>
+        <div className="mt-1">
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+          >
+            <option value="teacher">Guru</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="admin">Admin</option>
+          </select>
         </div>
       </div>
 
@@ -130,7 +163,7 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
           disabled={isLoading}
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
         >
-          {isLoading ? 'Memproses...' : 'Masuk'}
+          {isLoading ? 'Memproses...' : 'Daftar'}
         </button>
       </div>
 
@@ -140,11 +173,11 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
           onClick={onToggleForm}
           className="text-sm text-blue-600 hover:text-blue-500"
         >
-          Belum punya akun? Daftar di sini
+          Sudah punya akun? Masuk di sini
         </button>
       </div>
     </form>
   );
 };
 
-export default Login;
+export default Register;

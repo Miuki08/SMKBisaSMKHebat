@@ -1,19 +1,10 @@
+// components/dashboard/RecentData.tsx
 "use client";
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { BookOpen, Calendar, Clock, User } from 'lucide-react';
-
-interface Lesson {
-  id: number;
-  nama_guru: string;
-  mata_pelajaran: string;
-  kelas: string;
-  pokok_materi: string;
-  tanggal_mengajar: string;
-  jam_mulai: string;
-  jam_selesai: string;
-}
+import { lessonService, Lesson } from '../../service/lessonService';
 
 const RecentData: React.FC = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -22,17 +13,10 @@ const RecentData: React.FC = () => {
   useEffect(() => {
     const fetchRecentLessons = async () => {
       try {
-        const token = localStorage.getItem('jwt_token');
-        const response = await fetch('http://localhost:8000/api/lessons?limit=5', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setLessons(data.lessons || []);
-        }
+        const data = await lessonService.getLessons();
+        // Ambil 5 data terbaru
+        const recentLessons = data.slice(0, 5);
+        setLessons(recentLessons);
       } catch (error) {
         console.error('Error fetching recent lessons:', error);
       } finally {
