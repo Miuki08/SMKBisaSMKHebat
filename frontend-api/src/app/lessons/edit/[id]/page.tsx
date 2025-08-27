@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
-import { apiService } from '../../../../service/api';
+import { lessonService } from '../../../../service/lessonService';
 
 export default function EditLesson() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function EditLesson() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nama_guru: '',
     mata_pelajaran: '',
@@ -25,32 +26,42 @@ export default function EditLesson() {
     status: 'terlaksana'
   });
 
-  useEffect(() => {
-    fetchLesson();
-  }, [id]);
-
-  const fetchLesson = async () => {
+  const fetchLesson = useCallback(async () => {
     try {
-      const data = await apiService.get(`/lessons/${id}`);
+      setIsFetching(true);
+      setError(null);
+      const data = await lessonService.getLesson(parseInt(id));
+      
+      // Format tanggal untuk input type="date"
+      const formattedDate = data.tanggal_mengajar.split('T')[0];
+      
       setFormData({
         nama_guru: data.nama_guru,
         mata_pelajaran: data.mata_pelajaran,
         kelas: data.kelas,
         pokok_materi: data.pokok_materi,
         bukti_mengajar: data.bukti_mengajar || '',
-        tanggal_mengajar: data.tanggal_mengajar.split('T')[0],
+        tanggal_mengajar: formattedDate,
         jam_mulai: data.jam_mulai,
         jam_selesai: data.jam_selesai,
         catatan: data.catatan || '',
         status: data.status
       });
-    } catch (error) {
-      console.error('Error fetching lesson:', error);
-      alert('Gagal memuat data');
+    } catch (err: unknown) {
+      console.error('Error fetching lesson:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Gagal memuat data';
+      setError(errorMessage);
+      alert(errorMessage);
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchLesson();
+    }
+  }, [id, fetchLesson]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -62,13 +73,17 @@ export default function EditLesson() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
-      await apiService.put(`/lessons/${id}`, formData);
+      await lessonService.updateLesson(parseInt(id), formData);
+      alert('Data berhasil diupdate');
       router.push('/lessons');
-    } catch (error) {
-      console.error('Error updating lesson:', error);
-      alert('Gagal mengupdate data');
+    } catch (err: unknown) {
+      console.error('Error updating lesson:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Gagal mengupdate data';
+      setError(errorMessage);
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -101,6 +116,13 @@ export default function EditLesson() {
         </button>
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Edit Data Pembelajaran</h1>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">

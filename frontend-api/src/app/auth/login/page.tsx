@@ -21,6 +21,15 @@ interface AuthResponse {
   user: User;
 }
 
+// Interface untuk response yang mungkin dari API
+interface ApiResponse {
+  data?: AuthResponse;
+  token?: string;
+  user?: User;
+  error?: string;
+  message?: string;
+}
+
 const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
   const [formData, setFormData] = useState<LoginData>({
     email: '',
@@ -50,10 +59,35 @@ const Login: React.FC<LoginProps> = ({ onToggleForm }) => {
     setError('');
 
     try {
-      const response = await apiService.post<AuthResponse>('/auth/login', formData);
+      // Gunakan ApiResponse sebagai type parameter
+      const response = await apiService.post<ApiResponse>('/auth/login', formData);
       
-      localStorage.setItem('jwt_token', response.token);
-      localStorage.setItem('user_data', JSON.stringify(response.user));
+      // DEBUG: Lihat struktur response sebenarnya
+      console.log('Raw login response:', response);
+      
+      // Sesuaikan dengan struktur response yang sebenarnya
+      let token: string;
+      let user: User;
+      
+      if (response && typeof response === 'object') {
+        // Format 1: { data: { token, user } }
+        if (response.data && typeof response.data === 'object') {
+          token = response.data.token;
+          user = response.data.user;
+        } 
+        // Format 2: { token, user } langsung
+        else if (response.token && response.user) {
+          token = response.token;
+          user = response.user;
+        } else {
+          throw new Error('Struktur response tidak dikenali');
+        }
+      } else {
+        throw new Error('Response tidak valid');
+      }
+      
+      localStorage.setItem('jwt_token', token);
+      localStorage.setItem('user_data', JSON.stringify(user));
       router.push('/dashboard');
     } catch (error) {
       if (error instanceof Error) {

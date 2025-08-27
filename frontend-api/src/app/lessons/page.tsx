@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
-import { apiService } from '../../service/api';
+import { lessonService } from '../../service/lessonService';
 
 interface Lesson {
   id: number;
@@ -18,16 +19,39 @@ interface Lesson {
 }
 
 export default function LessonsPage() {
+  const router = useRouter();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [filteredLessons, setFilteredLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 10;
+
+  const fetchLessons = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await lessonService.getLessons();
+      setLessons(data || []);
+    } catch (err: unknown) {
+      console.error('Error fetching lessons:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Gagal memuat data pembelajaran';
+      setError(errorMessage);
+      
+      // Redirect ke login jika unauthorized
+      if (errorMessage.includes('Unauthorized') || errorMessage.includes('401')) {
+        localStorage.removeItem('jwt_token');
+        router.push('/auth/login');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [router]);
 
   useEffect(() => {
     fetchLessons();
-  }, []);
+  }, [fetchLessons]);
 
   useEffect(() => {
     const filtered = lessons.filter((lesson) =>
@@ -39,27 +63,19 @@ export default function LessonsPage() {
     setCurrentPage(1);
   }, [searchTerm, lessons]);
 
-  const fetchLessons = async () => {
-    try {
-      const data = await apiService.get('/lessons');
-      // backend return array langsung, bukan {lessons: []}
-      setLessons(data || []);
-    } catch (error) {
-      console.error('Error fetching lessons:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleDelete = async (id: number) => {
     if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
 
     try {
-      await apiService.delete(`/lessons/${id}`);
+      setError(null);
+      await lessonService.deleteLesson(id);
       setLessons((prev) => prev.filter((lesson) => lesson.id !== id));
-    } catch (error) {
-      console.error('Error deleting lesson:', error);
-      alert('Gagal menghapus data');
+      alert('Data berhasil dihapus');
+    } catch (err: unknown) {
+      console.error('Error deleting lesson:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Gagal menghapus data';
+      setError(errorMessage);
+      alert(errorMessage);
     }
   };
 
@@ -72,12 +88,16 @@ export default function LessonsPage() {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    try {
+      return new Date(dateString).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return dateString;
+    }
   };
 
   if (isLoading) {
@@ -112,6 +132,13 @@ export default function LessonsPage() {
           Tambah Data
         </Link>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
       {/* Search */}
       <div className="mb-6">
@@ -148,6 +175,8 @@ export default function LessonsPage() {
                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                     lesson.status === 'terlaksana'
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : lesson.status === 'dibatalkan'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                       : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                   }`}
                 >

@@ -1,58 +1,63 @@
 import { apiService, LessonData, Lesson } from './api';
 
 export const lessonService = {
-  // Get all lessons dengan filter opsional
   async getLessons(filters?: {
     tanggal?: string;
     guru?: string;
     mapel?: string;
     kelas?: string;
   }) {
-    const params = new URLSearchParams();
-    
-    if (filters?.tanggal) params.append('tanggal', filters.tanggal);
-    if (filters?.guru) params.append('guru', filters.guru);
-    if (filters?.mapel) params.append('mapel', filters.mapel);
-    if (filters?.kelas) params.append('kelas', filters.kelas);
-    
-    const queryString = params.toString();
-    const url = queryString ? `/lessons?${queryString}` : '/lessons';
-    
-    return apiService.get<Lesson[]>(url);
+    try {
+      const params = new URLSearchParams();
+      
+      if (filters?.tanggal) params.append('tanggal', filters.tanggal);
+      if (filters?.guru) params.append('guru', filters.guru);
+      if (filters?.mapel) params.append('mapel', filters.mapel);
+      if (filters?.kelas) params.append('kelas', filters.kelas);
+      
+      const queryString = params.toString();
+      const url = queryString ? `/lessons?${queryString}` : '/lessons';
+      
+      return await apiService.get<Lesson[]>(url);
+    } catch (error) {
+      console.error('Error in getLessons:', error);
+      throw error;
+    }
   },
 
-  // Get single lesson by ID
   async getLesson(id: number) {
-    return apiService.get<Lesson>(`/lessons/${id}`);
+    try {
+      return await apiService.get<Lesson>(`/lessons/${id}`);
+    } catch (error) {
+      console.error('Error in getLesson:', error);
+      throw error;
+    }
   },
 
-  // Create new lesson
   async createLesson(data: LessonData) {
-    return apiService.post<Lesson>('/lessons', data);
+    try {
+      return await apiService.post<Lesson>('/lessons', data);
+    } catch (error) {
+      console.error('Error in createLesson:', error);
+      throw error;
+    }
   },
 
-  // Update lesson
   async updateLesson(id: number, data: Partial<LessonData>) {
-    return apiService.put<Lesson>(`/lessons/${id}`, data);
+    try {
+      return await apiService.put<Lesson>(`/lessons/${id}`, data);
+    } catch (error) {
+      console.error('Error in updateLesson:', error);
+      throw error;
+    }
   },
 
-  // Delete lesson
   async deleteLesson(id: number) {
-    return apiService.delete<{ message: string }>(`/lessons/${id}`);
-  },
-
-  // Get lesson history
-  async getLessonHistory(id: number) {
-    return apiService.get(`/lessons/${id}/history`);
-  },
-
-  // Get teacher report
-  async getTeacherReport(guru: string, startDate?: string, endDate?: string) {
-    const params = new URLSearchParams();
-    params.append('guru', guru);
-    if (startDate) params.append('start_date', startDate);
-    if (endDate) params.append('end_date', endDate);
-    
-    return apiService.get<Lesson[]>(`/reports/teacher?${params.toString()}`);
+    try {
+      return await apiService.delete<{ message: string }>(`/lessons/${id}`);
+    } catch (error) {
+      console.error('Error in deleteLesson:', error);
+      throw error;
+    }
   }
 };

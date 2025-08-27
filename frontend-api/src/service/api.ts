@@ -63,107 +63,150 @@ export type ApiRequestData = LoginData | RegisterData | LessonData | Record<stri
 
 export const apiService = {
   async get<T = unknown>(url: string): Promise<T> {
-    const token = localStorage.getItem('jwt_token');
-    const response = await fetch(`${API_BASE_URL}${url}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}${url}`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (response.status === 401) {
-      localStorage.clear();
-      window.location.href = '/auth/login';
-      throw new Error('Unauthorized');
-    }
+      if (response.status === 401) {
+        localStorage.removeItem('jwt_token');
+        window.location.href = '/auth/login';
+        throw new Error('Unauthorized');
+      }
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.error || result.message || 'Request failed');
-    }
+      if (!response.ok) {
+        throw new Error(result.error || result.message || `HTTP error! status: ${response.status}`);
+      }
 
-    // Handle berbagai format response
-    if (Array.isArray(result)) {
-      return result as T; // Jika backend return array langsung
-    } else if (result && typeof result === 'object' && 'data' in result) {
-      return result.data as T; // Format { data: [...] }
-    } else {
-      return result as T; // Fallback
+      // Handle berbagai format response
+      if (Array.isArray(result)) {
+        return result as T;
+      } else if (result && typeof result === 'object' && 'data' in result) {
+        return result.data as T;
+      } else {
+        return result as T;
+      }
+    } catch (error) {
+      console.error('API GET Error:', error);
+      throw error;
     }
   },
 
   async post<T = unknown>(url: string, data: ApiRequestData): Promise<T> {
-    const token = localStorage.getItem('jwt_token');
-    const response = await fetch(`${API_BASE_URL}${url}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}${url}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (response.status === 401) {
-      localStorage.clear();
-      window.location.href = '/auth/login';
-      throw new Error('Unauthorized');
+      if (response.status === 401) {
+        localStorage.removeItem('jwt_token');
+        window.location.href = '/auth/login';
+        throw new Error('Unauthorized');
+      }
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || result.message || 'Request failed');
+      }
+
+      // Handle berbagai format response
+      if (result && typeof result === 'object') {
+        // Jika response memiliki properti 'data'
+        if ('data' in result) {
+          return result.data as T;
+        }
+        // Jika response langsung berisi data yang diinginkan (seperti {token: '', user: {}})
+        if ('token' in result || 'user' in result) {
+          return result as T;
+        }
+      }
+      
+      return result as T;
+    } catch (error) {
+      console.error('API POST Error:', error);
+      throw error;
     }
-
-    const result: ApiResponse<T> = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || result.message || 'Request failed');
-    }
-
-    return result.data as T;
   },
 
   async put<T = unknown>(url: string, data: ApiRequestData): Promise<T> {
-    const token = localStorage.getItem('jwt_token');
-    const response = await fetch(`${API_BASE_URL}${url}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}${url}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (response.status === 401) {
-      localStorage.clear();
-      window.location.href = '/auth/login';
-      throw new Error('Unauthorized');
+      if (response.status === 401) {
+        localStorage.removeItem('jwt_token');
+        window.location.href = '/auth/login';
+        throw new Error('Unauthorized');
+      }
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || result.message || 'Request failed');
+      }
+
+      // Handle berbagai format response
+      if (result && typeof result === 'object' && 'data' in result) {
+        return result.data as T;
+      } else {
+        return result as T;
+      }
+    } catch (error) {
+      console.error('API PUT Error:', error);
+      throw error;
     }
-
-    const result: ApiResponse<T> = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || result.message || 'Request failed');
-    }
-
-    return result.data as T;
   },
 
   async delete<T = unknown>(url: string): Promise<T> {
-  const token = localStorage.getItem('jwt_token');
-  const response = await fetch(`${API_BASE_URL}${url}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`${API_BASE_URL}${url}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
 
-  const result: ApiResponse<T> = await response.json();
+      const result = await response.json();
 
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error('Data tidak ditemukan atau sudah dihapus');
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Data tidak ditemukan atau sudah dihapus');
+        }
+        throw new Error(result.error || result.message || 'Request failed');
+      }
+
+      // Handle berbagai format response
+      if (result && typeof result === 'object' && 'data' in result) {
+        return result.data as T;
+      } else if (result && typeof result === 'object' && 'message' in result) {
+        return result.message as unknown as T;
+      } else {
+        return result as T;
+      }
+    } catch (error) {
+      console.error('API DELETE Error:', error);
+      throw error;
     }
-    throw new Error(result.error || result.message || 'Request failed');
   }
-
-  return (result.data as T) ?? (result.message as unknown as T);
-}
-
 };
