@@ -4,7 +4,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { BookOpen, Calendar, Clock, User } from 'lucide-react';
-import { lessonService, Lesson } from '../../service/lessonService';
+import { Lesson } from '../../service/api';
+import { lessonService } from '../../service/lessonService';
 
 const RecentData: React.FC = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);

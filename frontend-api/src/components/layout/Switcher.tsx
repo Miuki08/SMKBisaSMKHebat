@@ -35,6 +35,7 @@ interface SwitcherProps {
   currentThemeBackground: string;
   onMenuBackgroundChange: (bg: string) => void;
   currentMenuBackground: string;
+  
 }
 
 const Switcher: React.FC<SwitcherProps> = ({ 

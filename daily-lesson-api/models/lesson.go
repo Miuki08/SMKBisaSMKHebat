@@ -7,6 +7,7 @@ import (
 
 type DailyLesson struct {
     gorm.Model
+    ID              uint      `json:"id" gorm:"primaryKey"`
     NamaGuru       string    `json:"nama_guru" validate:"required"`
     MataPelajaran  string    `json:"mata_pelajaran" validate:"required"`
     Kelas          string    `json:"kelas" validate:"required"`

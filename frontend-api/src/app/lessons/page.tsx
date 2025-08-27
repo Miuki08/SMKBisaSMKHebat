@@ -23,14 +23,14 @@ export default function LessonsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchLessons();
   }, []);
 
   useEffect(() => {
-    const filtered = lessons.filter(lesson =>
+    const filtered = lessons.filter((lesson) =>
       lesson.nama_guru.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lesson.mata_pelajaran.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lesson.kelas.toLowerCase().includes(searchTerm.toLowerCase())
@@ -42,7 +42,8 @@ export default function LessonsPage() {
   const fetchLessons = async () => {
     try {
       const data = await apiService.get('/lessons');
-      setLessons(data.lessons || []);
+      // backend return array langsung, bukan {lessons: []}
+      setLessons(data || []);
     } catch (error) {
       console.error('Error fetching lessons:', error);
     } finally {
@@ -55,14 +56,14 @@ export default function LessonsPage() {
 
     try {
       await apiService.delete(`/lessons/${id}`);
-      setLessons(lessons.filter(lesson => lesson.id !== id));
+      setLessons((prev) => prev.filter((lesson) => lesson.id !== id));
     } catch (error) {
       console.error('Error deleting lesson:', error);
       alert('Gagal menghapus data');
     }
   };
 
-  // Pagination logic
+  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredLessons.slice(indexOfFirstItem, indexOfLastItem);
@@ -75,7 +76,7 @@ export default function LessonsPage() {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -83,7 +84,9 @@ export default function LessonsPage() {
     return (
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Data Pembelajaran</h1>
+          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+            Data Pembelajaran
+          </h1>
           <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
         </div>
         <div className="animate-pulse space-y-4">
@@ -98,7 +101,9 @@ export default function LessonsPage() {
   return (
     <div className="p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-0">Data Pembelajaran</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-0">
+          Data Pembelajaran
+        </h1>
         <Link
           href="/lessons/create"
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -126,19 +131,26 @@ export default function LessonsPage() {
       {currentItems.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
           <p className="text-gray-500 dark:text-gray-400">
-            {searchTerm ? 'Tidak ada data yang sesuai dengan pencarian' : 'Belum ada data pembelajaran'}
+            {searchTerm
+              ? 'Tidak ada data yang sesuai dengan pencarian'
+              : 'Belum ada data pembelajaran'}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           {currentItems.map((lesson) => (
-            <div key={lesson.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div
+              key={lesson.id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+            >
               <div className="flex justify-between items-start mb-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  lesson.status === 'terlaksana' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    lesson.status === 'terlaksana'
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                  }`}
+                >
                   {lesson.status}
                 </span>
                 <div className="flex space-x-2">
@@ -160,7 +172,9 @@ export default function LessonsPage() {
               <h3 className="font-semibold text-lg text-gray-800 dark:text-white mb-2">
                 {lesson.mata_pelajaran}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">{lesson.pokok_materi}</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                {lesson.pokok_materi}
+              </p>
 
               <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                 <div className="flex items-center">
@@ -177,7 +191,9 @@ export default function LessonsPage() {
                 </div>
                 <div className="flex items-center">
                   <span className="font-medium mr-2">Waktu:</span>
-                  <span>{lesson.jam_mulai} - {lesson.jam_selesai}</span>
+                  <span>
+                    {lesson.jam_mulai} - {lesson.jam_selesai}
+                  </span>
                 </div>
               </div>
             </div>
@@ -195,7 +211,7 @@ export default function LessonsPage() {
           >
             Previous
           </button>
-          
+
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
@@ -209,7 +225,7 @@ export default function LessonsPage() {
               {page}
             </button>
           ))}
-          
+
           <button
             onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}

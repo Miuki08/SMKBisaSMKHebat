@@ -72,18 +72,25 @@ export const apiService = {
     });
 
     if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
-      localStorage.removeItem('user_data');
+      localStorage.clear();
       window.location.href = '/auth/login';
       throw new Error('Unauthorized');
     }
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const errorData: ApiResponse = await response.json();
-      throw new Error(errorData.error || 'Request failed');
+      throw new Error(result.error || result.message || 'Request failed');
     }
 
-    return response.json() as Promise<T>;
+    // Handle berbagai format response
+    if (Array.isArray(result)) {
+      return result as T; // Jika backend return array langsung
+    } else if (result && typeof result === 'object' && 'data' in result) {
+      return result.data as T; // Format { data: [...] }
+    } else {
+      return result as T; // Fallback
+    }
   },
 
   async post<T = unknown>(url: string, data: ApiRequestData): Promise<T> {
@@ -98,19 +105,18 @@ export const apiService = {
     });
 
     if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
-      localStorage.removeItem('user_data');
+      localStorage.clear();
       window.location.href = '/auth/login';
       throw new Error('Unauthorized');
     }
 
-    const responseData: ApiResponse<T> = await response.json();
-    
+    const result: ApiResponse<T> = await response.json();
+
     if (!response.ok) {
-      throw new Error(responseData.error || 'Request failed');
+      throw new Error(result.error || result.message || 'Request failed');
     }
 
-    return responseData as T;
+    return result.data as T;
   },
 
   async put<T = unknown>(url: string, data: ApiRequestData): Promise<T> {
@@ -125,43 +131,39 @@ export const apiService = {
     });
 
     if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
-      localStorage.removeItem('user_data');
+      localStorage.clear();
       window.location.href = '/auth/login';
       throw new Error('Unauthorized');
     }
 
-    const responseData: ApiResponse<T> = await response.json();
-    
+    const result: ApiResponse<T> = await response.json();
+
     if (!response.ok) {
-      throw new Error(responseData.error || 'Request failed');
+      throw new Error(result.error || result.message || 'Request failed');
     }
 
-    return responseData as T;
+    return result.data as T;
   },
 
   async delete<T = unknown>(url: string): Promise<T> {
-    const token = localStorage.getItem('jwt_token');
-    const response = await fetch(`${API_BASE_URL}${url}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  const token = localStorage.getItem('jwt_token');
+  const response = await fetch(`${API_BASE_URL}${url}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
-    if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
-      localStorage.removeItem('user_data');
-      window.location.href = '/auth/login';
-      throw new Error('Unauthorized');
+  const result: ApiResponse<T> = await response.json();
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Data tidak ditemukan atau sudah dihapus');
     }
+    throw new Error(result.error || result.message || 'Request failed');
+  }
 
-    const responseData: ApiResponse<T> = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(responseData.error || 'Request failed');
-    }
+  return (result.data as T) ?? (result.message as unknown as T);
+}
 
-    return responseData as T;
-  },
 };

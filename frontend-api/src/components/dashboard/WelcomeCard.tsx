@@ -1,8 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
+import { User } from '../../app/types';
 
-export default function WelcomeCard() {
+interface WelcomeCardProps {
+  user?: User;
+}
+
+export default function WelcomeCard({ user }: WelcomeCardProps) {
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [percentage, setPercentage] = useState(0);
@@ -60,7 +65,7 @@ export default function WelcomeCard() {
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateX(0)' : 'translateX(-20px)'
           }}>
-            Hi, Welcome Back <span className="text-blue-300">Nick!</span>
+            Hi, Welcome Back <span className="text-blue-300">{user?.name || 'User'}!</span>
           </h3>
           <p className="text-blue-200 mb-6 transition-all duration-700 delay-100" style={{
             opacity: isVisible ? 1 : 0,
