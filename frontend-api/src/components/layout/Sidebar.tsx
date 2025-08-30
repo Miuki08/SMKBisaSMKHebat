@@ -30,12 +30,12 @@ export default function Sidebar({ isOpen = false, setIsOpen = () => {} }: Sideba
       path: '/dashboard',
     },
     {
-      title: 'Tampil Data',
+      title: 'Data Pembelajaran',
       icon: BookOpen,
       path: '/lessons',
     },
     {
-      title: 'Tambah Data',
+      title: 'Tambah Pembelajaran',
       icon: PlusCircle,
       path: '/lessons/create',
     },

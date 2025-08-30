@@ -39,7 +39,6 @@ export default function LessonsPage() {
       const errorMessage = err instanceof Error ? err.message : 'Gagal memuat data pembelajaran';
       setError(errorMessage);
       
-      // Redirect ke login jika unauthorized
       if (errorMessage.includes('Unauthorized') || errorMessage.includes('401')) {
         localStorage.removeItem('jwt_token');
         router.push('/auth/login');
@@ -79,7 +78,6 @@ export default function LessonsPage() {
     }
   };
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredLessons.slice(indexOfFirstItem, indexOfLastItem);
@@ -102,24 +100,21 @@ export default function LessonsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
+      <div className="animate-pulse space-y-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-            Data Pembelajaran
-          </h1>
-          <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
         </div>
-        <div className="animate-pulse space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          ))}
-        </div>
+        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded mb-6"></div>
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="p-6">
+    <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-0">
           Data Pembelajaran
@@ -133,14 +128,12 @@ export default function LessonsPage() {
         </Link>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
         </div>
       )}
 
-      {/* Search */}
       <div className="mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -154,7 +147,6 @@ export default function LessonsPage() {
         </div>
       </div>
 
-      {/* Lessons Grid */}
       {currentItems.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
           <p className="text-gray-500 dark:text-gray-400">
@@ -230,7 +222,6 @@ export default function LessonsPage() {
         </div>
       )}
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center space-x-2">
           <button
@@ -264,6 +255,6 @@ export default function LessonsPage() {
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 }

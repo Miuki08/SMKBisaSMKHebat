@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { apiService } from '../../../service/api';
 
 export default function CreateLesson() {
@@ -45,22 +45,20 @@ export default function CreateLesson() {
 
   return (
     <div className="p-6">
-      <div className="flex items-center mb-6">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white mr-4"
-        >
-          <ArrowLeft className="w-5 h-5 mr-1" />
-          Kembali
-        </button>
-        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Tambah Data Pembelajaran</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+          Tambah Data Pembelajaran Baru
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Isi formulir berikut untuk menambahkan data pembelajaran baru
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label htmlFor="nama_guru" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="space-y-2">
+              <label htmlFor="nama_guru" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Nama Guru *
               </label>
               <input
@@ -70,13 +68,13 @@ export default function CreateLesson() {
                 required
                 value={formData.nama_guru}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                 placeholder="Masukkan nama guru"
               />
             </div>
 
-            <div>
-              <label htmlFor="mata_pelajaran" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="space-y-2">
+              <label htmlFor="mata_pelajaran" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Mata Pelajaran *
               </label>
               <input
@@ -86,13 +84,13 @@ export default function CreateLesson() {
                 required
                 value={formData.mata_pelajaran}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                 placeholder="Masukkan mata pelajaran"
               />
             </div>
 
-            <div>
-              <label htmlFor="kelas" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="space-y-2">
+              <label htmlFor="kelas" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Kelas *
               </label>
               <input
@@ -102,13 +100,13 @@ export default function CreateLesson() {
                 required
                 value={formData.kelas}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                 placeholder="Contoh: X IPA 1"
               />
             </div>
 
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="space-y-2">
+              <label htmlFor="status" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Status *
               </label>
               <select
@@ -117,7 +115,7 @@ export default function CreateLesson() {
                 required
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
               >
                 <option value="terlaksana">Terlaksana</option>
                 <option value="dibatalkan">Dibatalkan</option>
@@ -125,8 +123,8 @@ export default function CreateLesson() {
               </select>
             </div>
 
-            <div>
-              <label htmlFor="tanggal_mengajar" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="space-y-2">
+              <label htmlFor="tanggal_mengajar" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Tanggal Mengajar *
               </label>
               <input
@@ -136,44 +134,48 @@ export default function CreateLesson() {
                 required
                 value={formData.tanggal_mengajar}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="jam_mulai" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Jam Mulai *
-                </label>
-                <input
-                  type="time"
-                  id="jam_mulai"
-                  name="jam_mulai"
-                  required
-                  value={formData.jam_mulai}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="jam_selesai" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Jam Selesai *
-                </label>
-                <input
-                  type="time"
-                  id="jam_selesai"
-                  name="jam_selesai"
-                  required
-                  value={formData.jam_selesai}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                />
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Waktu Mengajar *
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="jam_mulai" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Jam Mulai
+                  </label>
+                  <input
+                    type="time"
+                    id="jam_mulai"
+                    name="jam_mulai"
+                    required
+                    value={formData.jam_mulai}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="jam_selesai" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    Jam Selesai
+                  </label>
+                  <input
+                    type="time"
+                    id="jam_selesai"
+                    name="jam_selesai"
+                    required
+                    value={formData.jam_selesai}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="md:col-span-2">
-              <label htmlFor="pokok_materi" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="md:col-span-2 space-y-2">
+              <label htmlFor="pokok_materi" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Pokok Materi *
               </label>
               <input
@@ -183,13 +185,13 @@ export default function CreateLesson() {
                 required
                 value={formData.pokok_materi}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                 placeholder="Masukkan pokok materi pembelajaran"
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label htmlFor="bukti_mengajar" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="md:col-span-2 space-y-2">
+              <label htmlFor="bukti_mengajar" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Bukti Mengajar
               </label>
               <input
@@ -198,41 +200,41 @@ export default function CreateLesson() {
                 name="bukti_mengajar"
                 value={formData.bukti_mengajar}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors"
                 placeholder="Contoh: Link Google Drive, foto, dll."
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label htmlFor="catatan" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="md:col-span-2 space-y-2">
+              <label htmlFor="catatan" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Catatan
               </label>
               <textarea
                 id="catatan"
                 name="catatan"
-                rows={3}
+                rows={4}
                 value={formData.catatan}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors resize-none"
                 placeholder="Tambahkan catatan jika diperlukan"
               />
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
-              onClick={() => router.back()}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              onClick={() => router.push('/lessons')}
+              className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-500/30 disabled:opacity-50 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
             >
-              <Save className="w-4 h-4 mr-2" />
+              <Save className="w-5 h-5 mr-2" />
               {isLoading ? 'Menyimpan...' : 'Simpan Data'}
             </button>
           </div>

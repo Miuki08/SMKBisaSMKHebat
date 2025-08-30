@@ -1,4 +1,3 @@
-// app/components/layout/Header.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -7,8 +6,8 @@ import Image from 'next/image';
 import Link from 'next/link'; 
 import { useTheme } from '../common/ThemeContext';
 import { 
-  Bell, ShoppingCart, Search, Sun, Moon, 
-  Maximize, Minimize, Grid, User as UserIcon, Settings, LogOut, Menu,
+  Search, Sun, Moon, 
+  Maximize, Minimize, User as UserIcon, Settings, LogOut, Menu,
   X, MessageSquare, Mail
 } from 'lucide-react';
 import { User } from '../../app/types';
@@ -83,10 +82,7 @@ export default function Header({
   user
 }: HeaderProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
-  const [appsOpen, setAppsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
@@ -134,10 +130,7 @@ export default function Header({
       const target = event.target as HTMLElement;
       
       if (!target.closest('.user-menu')) setUserMenuOpen(false);
-      if (!target.closest('.notifications-menu')) setNotificationsOpen(false);
-      if (!target.closest('.cart-menu')) setCartOpen(false);
       if (!target.closest('.language-menu')) setLanguageOpen(false);
-      if (!target.closest('.apps-menu')) setAppsOpen(false);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -354,217 +347,22 @@ export default function Header({
             )}
           </div>
 
-          {/* Dark mode toggle */}
+          {/* Dark mode toggle - Diperbarui */}
           <button
-            className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white p-1"
+            className="p-1 rounded-full transition-colors duration-300"
             onClick={handleThemeToggle}
             aria-label={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            {theme === 'dark' ? (
+              <div className="flex items-center justify-center w-8 h-8 bg-white text-black rounded-full shadow-md">
+                <Sun className="h-5 w-5" />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center w-8 h-8 bg-gray-800 text-white rounded-full shadow-md">
+                <Moon className="h-5 w-5" />
+              </div>
+            )}
           </button>
-
-          {/* Shopping cart */}
-          <div className="relative cart-menu">
-            <button 
-              className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white p-1 relative"
-              onClick={() => setCartOpen(!cartOpen)}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                5
-              </span>
-            </button>
-            
-            {/* Cart dropdown */}
-            {cartOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700">
-                <div className="p-3 border-b dark:border-gray-700">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-gray-800 dark:text-white">Shopping Cart</h3>
-                    <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 text-xs px-2 py-1 rounded">
-                      5 Items
-                    </span>
-                  </div>
-                </div>
-                <div className="max-h-96 overflow-y-auto p-2">
-                  {/* Cart items */}
-                  <div className="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
-                    <Image 
-                      src="/assets/images/ecommerce/19.jpg" 
-                      alt="Lence Camera" 
-                      className="w-12 h-12 rounded object-cover"
-                      width={48}
-                      height={48}
-                    />
-                    <div className="ml-3 flex-1">
-                      <p className="text-sm font-medium text-gray-800 dark:text-white">Lence Camera</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">1 × $189.00</p>
-                    </div>
-                    <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
-                    <Image 
-                      src="/assets/images/ecommerce/16.jpg" 
-                      alt="White Earbuds" 
-                      className="w-12 h-12 rounded object-cover"
-                      width={48}
-                      height={48}
-                    />
-                    <div className="ml-3 flex-1">
-                      <p className="text-sm font-medium text-gray-800 dark:text-white">White Earbuds</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">3 × $59.00</p>
-                    </div>
-                    <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/30 border-t dark:border-gray-700">
-                  <div className="flex justify-between mb-2">
-                    <span className="font-medium text-gray-800 dark:text-white">Sub Total:</span>
-                    <span className="font-medium text-gray-800 dark:text-white">$485.93</span>
-                  </div>
-                  <button className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 text-sm">
-                    Checkout
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Notifications */}
-          <div className="relative notifications-menu">
-            <button 
-              className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white p-1 relative"
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                6
-              </span>
-            </button>
-            
-            {/* Notifications dropdown */}
-            {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700">
-                <div className="p-3 border-b dark:border-gray-700">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-gray-800 dark:text-white">Notifications</h3>
-                    <span className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded">
-                      6 Unread
-                    </span>
-                  </div>
-                </div>
-                <div className="max-h-96 overflow-y-auto">
-                  {/* Notification items */}
-                  <div className="p-3 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <div className="flex">
-                      <div className="mr-3">
-                        <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center">
-                          <span className="text-white text-sm">📁</span>
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800 dark:text-white">
-                          <Link href="#" className="hover:underline">New Files available</Link>
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">10 hours ago</p>
-                      </div>
-                      <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="p-3 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <div className="flex">
-                      <div className="mr-3">
-                        <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center">
-                          <span className="text-white text-sm">🔄</span>
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800 dark:text-white">
-                          <Link href="#" className="hover:underline">Updates available</Link>
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">2 days ago</p>
-                      </div>
-                      <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-3 border-t dark:border-gray-700">
-                  <button className="w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 text-sm">
-                    View All Notifications
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Apps */}
-          <div className="relative apps-menu hidden md:block">
-            <button 
-              className="text-gray-500 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white p-1"
-              onClick={() => setAppsOpen(!appsOpen)}
-            >
-              <Grid className="h-5 w-5" />
-            </button>
-            
-            {/* Apps dropdown */}
-            {appsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700">
-                <div className="p-3 border-b dark:border-gray-700">
-                  <h3 className="font-semibold text-gray-800 dark:text-white">Related Apps</h3>
-                </div>
-                <div className="p-3">
-                  <div className="grid grid-cols-3 gap-2">
-                    {/* App items */}
-                    <Link href="#" className="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                      <Image 
-                        src="/assets/images/apps/figma.png" 
-                        alt="Figma" 
-                        className="w-10 h-10 rounded"
-                        width={40}
-                        height={40}
-                      />
-                      <span className="text-xs mt-2 text-gray-700 dark:text-gray-300">Figma</span>
-                    </Link>
-                    <Link href="#" className="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                      <Image 
-                        src="/assets/images/apps/microsoft-powerpoint.png" 
-                        alt="PowerPoint" 
-                        className="w-10 h-10 rounded"
-                        width={40}
-                        height={40}
-                      />
-                      <span className="text-xs mt-2 text-gray-700 dark:text-gray-300">PowerPoint</span>
-                    </Link>
-                    <Link href="#" className="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                      <Image 
-                        src="/assets/images/apps/microsoft-word.png" 
-                        alt="Word" 
-                        className="w-10 h-10 rounded"
-                        width={40}
-                        height={40}
-                      />
-                      <span className="text-xs mt-2 text-gray-700 dark:text-gray-300">MS Word</span>
-                    </Link>
-                  </div>
-                </div>
-                <div className="p-3 border-t dark:border-gray-700">
-                  <button className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 text-sm">
-                    View All Apps
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* Fullscreen */}
           <button 
