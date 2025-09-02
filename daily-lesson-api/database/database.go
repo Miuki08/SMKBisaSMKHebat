@@ -4,7 +4,7 @@ import (
     "log"
     "os"
     "daily-lesson-api/models"
-    "github.com/glebarez/sqlite" // Pure Go SQLite driver
+    "github.com/glebarez/sqlite"
     "gorm.io/gorm"
 )
 
@@ -32,6 +32,7 @@ func Connect() {
         &models.User{},
         &models.DailyLesson{},
         &models.LessonReport{},
+        &models.Activity{},
     )
     if err != nil {
         log.Fatal("Failed to migrate database:", err)
@@ -41,6 +42,9 @@ func Connect() {
     
     // Create default users if not exists
     createDefaultUsers()
+    
+    // Create sample activities if table is empty
+    createSampleActivities()
 }
 
 func createDefaultUsers() {
@@ -116,3 +120,42 @@ func createDefaultUsers() {
         }
     }
 }
+
+// Fungsi untuk membuat sample activities jika tabel kosong
+func createSampleActivities() {
+    var count int64
+    DB.Model(&models.Activity{}).Count(&count)
+    
+    if count == 0 {
+        sampleActivities := []models.Activity{
+            {
+                Action:       "login",
+                Description:  "User admin@sekolah.com logged in to the system",
+                PerformedBy:  "admin@sekolah.com",
+            },
+            {
+                Action:       "create",
+                Description:  "Membuat lesson baru: Matematika Kelas 10",
+                PerformedBy:  "guru@sekolah.com",
+            },
+            {
+                Action:       "update",
+                Description:  "Memperbarui lesson: Bahasa Indonesia Kelas 11",
+                PerformedBy:  "supervisor@sekolah.com",
+            },
+            {
+                Action:       "view",
+                Description:  "Melihat laporan guru",
+                PerformedBy:  "admin@sekolah.com",
+            },
+        }
+        
+        for _, activity := range sampleActivities {
+            if err := DB.Create(&activity).Error; err != nil {
+                log.Printf("Failed to create sample activity: %v", err)
+            }
+        }
+        
+        log.Println("Sample activities created successfully")
+    }
+}   

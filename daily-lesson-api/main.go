@@ -48,7 +48,7 @@ func main() {
             "message": "Daily Lesson API Server is running",
             "version": "1.0.0",
             "endpoints": fiber.Map{
-                "auth": "/api/auth",
+                "auth": "/api   /auth",
                 "lessons": "/api/lessons",
                 "reports": "/api/reports",
             },
@@ -83,6 +83,9 @@ func main() {
     api.Post("/lessons", middleware.TeacherOnly(), handlers.CreateLesson)       
     api.Put("/lessons/:id", middleware.TeacherOnly(), handlers.UpdateLesson)    
     api.Delete("/lessons/:id", middleware.TeacherOnly(), handlers.DeleteLesson) 
+
+    // Tambahkan route activities
+    api.Get("/activities", handlers.GetUserActivities)
     
     // Handle 404 - Route not found
     app.Use(func(c *fiber.Ctx) error {

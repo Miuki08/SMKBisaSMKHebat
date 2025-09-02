@@ -251,7 +251,6 @@ export default function LessonsPage() {
             disabled={currentPage === totalPages}
             className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 disabled:opacity-50"
           >
-            Next
           </button>
         </div>
       )}
